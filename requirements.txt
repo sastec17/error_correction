@@ -1,0 +1,5 @@
+--find-links https://download.pytorch.org/whl/cu113/torch_stable.html
+torch==1.12.1
+transformers==4.11.3
+nltk==3.7
+rapidfuzz==2.13.2
