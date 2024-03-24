@@ -79,9 +79,9 @@ def eval_codet5_edit(codet5, dev, device, args, gold="data/sqledit_dev_gold.sql"
     predictions = []
 
     step = 0
-    codet5.model.eval()
+    codet5.model.eval()     # TODO: FIGURE OUT WHAT THIS MEANS
     for ex in tqdm(dev, desc="Progress", dynamic_ncols=True, total=len(dev)):
-        if ex["out"].startswith(" <s> sql = "):
+        if ex["out"].startswith(" <s> sql = "):     # Grab sql query - Case where nothing predicted? 
             query_dict = json.loads(ex["inp"].split(" </s> sql = ")[1])
             query = rebuild_sql(query_dict)
 
@@ -96,11 +96,13 @@ def eval_codet5_edit(codet5, dev, device, args, gold="data/sqledit_dev_gold.sql"
                 "gold": ex["out"]
             })
         else:
+            # NEED TO RUN MODEL - GRAB INPUT TOKENS
             inp_tokens = codet5.tokenizer(
                 ex["inp"], 
                 return_tensors="pt"
             ).to(device)
 
+            # RUNS CODET5 MODEL
             beam = codet5.model.generate(
                 inp_tokens["input_ids"], 
                 max_length=codet5.max_length,
@@ -109,7 +111,7 @@ def eval_codet5_edit(codet5, dev, device, args, gold="data/sqledit_dev_gold.sql"
                 output_scores=True,
                 return_dict_in_generate=True
             )
-            
+            # DECODE CODET5 MODEL
             beam_strs = codet5.tokenizer.batch_decode(
                 beam.sequences, 
                 skip_special_tokens=True
@@ -120,8 +122,10 @@ def eval_codet5_edit(codet5, dev, device, args, gold="data/sqledit_dev_gold.sql"
             query_exec = ""
             if args.program_only:
                 query_dict = json.loads(ex["inp"].split(" </s> sql = ")[1])
+                # Program holds suggested sql edit sequence 
                 program = program.split("sql = ")[0]
                 lines = program.split("\n")
+                # Execute the edits and rebuild the sql query
                 for l in lines:
                     query_dict, return_code = execute_edit(query_dict, l)
                 query = rebuild_sql(query_dict)
@@ -148,6 +152,7 @@ def eval_codet5_edit(codet5, dev, device, args, gold="data/sqledit_dev_gold.sql"
         if step % 100 == 0:
             print("Eval Step {} / {}".format(step, len(dev)))
 
+    # write predictions to file
     out_predictions_record = open("eval_codet5.json", "w+")
     json.dump(predictions, out_predictions_record, indent=2)
 

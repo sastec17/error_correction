@@ -78,7 +78,7 @@ class OrderBy(ASTNode):
 class OrderUnit(ASTNode):
     def __init__(self):
         self.is_asc = True
-        self.val_unit = ValUnit()
+        self.val_unit = ValUnit()       # column we are ordering by??
 
     def __eq__(self, other):
         if other is self:

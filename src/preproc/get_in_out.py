@@ -125,7 +125,7 @@ def get_program_in_out(processed_data, is_train=True):
             inp += ex["schema_text"]
         inp += " </s> sql = " + json.dumps(init_query_clauses)
 
-        schema = schemas[db_id]
+        schema = schemas[db_id]   # MODIFY SCHEMA HERE
         table = tables[db_id]
         schema = Schema(schema, table)
 
@@ -133,7 +133,7 @@ def get_program_in_out(processed_data, is_train=True):
         if is_train or ex["label"] == 0:
             gold_sql = empty_sql_label
             try:
-                gold_sql = get_sql(schema, ex["query_sql"])
+                gold_sql = get_sql(schema, ex["query_sql"])     # MODIFY SCHEMA HERE
             except:
                 # Shouldn't happen
                 continue
@@ -141,7 +141,7 @@ def get_program_in_out(processed_data, is_train=True):
             try:
                 init_sql = get_sql(schema, ex["init_query_sql"])
                 gold_sql = get_sql(schema, ex["query_sql"])
-                edits = get_edits(init_query_clauses, gold_query_clauses, init_sql, gold_sql, schema)
+                edits = get_edits(init_query_clauses, gold_query_clauses, init_sql, gold_sql, schema)    # MODIFY SCHEMA HERE
             except:
                 if ex["init_query_sql"]:
                     inp = inp.split(" </s> sql = ")[0] + " </s> sql = {}"

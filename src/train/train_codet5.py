@@ -13,7 +13,7 @@ import torch
 def train_codet5(args):
     # Init training device ("cpu" or "cuda:x" where x is the gpu number)
     device = get_device(args)
-    # Load training and development set
+    # Load training and development set - what was just written in preprocessing
     train = json.load(open(args.sqledit_train_fname))
     dev = json.load(open(args.sqledit_dev_fname))
 
@@ -58,7 +58,7 @@ def train_codet5(args):
         for j in tqdm(range(num_batches), desc="Progress", dynamic_ncols=True, total=num_batches):
             # Load batch
             batch = train[j * batch_size : (j + 1) * batch_size]
-
+            
             # Tokenize input and output
             inp_tokens = codet5.tokenizer(
                 [ex["inp"] for ex in batch], 

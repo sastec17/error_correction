@@ -503,8 +503,8 @@ def evaluate(gold, predict, db_dir, etype, kmaps):
         p_str = p[0]
         g_str, db = g
         db_name = db
-        db = os.path.join(db_dir, db, db + ".sqlite")
-        schema = Schema(get_schema(db))
+        db = os.path.join(db_dir, db, db + ".sqlite")  # Get database name
+        schema = Schema(get_schema(db))                # TODO: MANIPULATE SCHEMA???
         g_sql = get_sql(schema, g_str)
         hardness = evaluator.eval_hardness(g_sql)
         scores[hardness]['count'] += 1
@@ -731,7 +731,7 @@ def build_valid_col_units(table_units, schema):
     col_ids = [table_unit[1] for table_unit in table_units if table_unit[0] == TABLE_TYPE['table_unit']]
     prefixs = [col_id[:-2] for col_id in col_ids]
     valid_col_units= []
-    for value in schema.idMap.values():
+    for value in schema.idMap.values():     # TODO: MANIPULATE FUNCTION. GET RID OF :<TYPE> before processing 
         if '.' in value and value[:value.index('.')] in prefixs:
             valid_col_units.append(value)
     return valid_col_units

@@ -66,6 +66,9 @@ class Schema:
         id = 1
         for key, vals in schema.items():
             for val in vals:
+                if ':' in val:
+                    val, _ = val.split(':')     # make sure :colType isn't part of the mapping process
+                    val = val.strip()
                 idMap[key.lower() + "." + val.lower()] = "__" + key.lower() + "." + val.lower() + "__"
                 id += 1
 
@@ -158,6 +161,7 @@ def scan_alias(toks):
 
 def get_tables_with_alias(schema, toks):
     tables = scan_alias(toks)
+    # TODO: VERIFY THAT THIS JUST HANDLES TABLE NAMES??
     for key in schema:
         assert key not in tables, "Alias {} has the same name in table".format(key)
         tables[key] = key
@@ -170,20 +174,27 @@ def parse_col(toks, start_idx, tables_with_alias, schema, default_tables=None):
     """
     tok = toks[start_idx]
     if tok == "*":
-        return start_idx + 1, schema.idMap[tok]
+        return start_idx + 1, schema.idMap[tok] # TODO: ADD "text" at the end - rejected
 
     if '.' in tok:  # if token is a composite
         alias, col = tok.split('.')
-        key = tables_with_alias[alias] + "." + col
+        key = tables_with_alias[alias] + "." + col # TODO: GET COL TYPE? - > no col type - rejected
         return start_idx+1, schema.idMap[key]
 
     assert default_tables is not None and len(default_tables) > 0, "Default tables should not be None or empty"
 
     for alias in default_tables:
         table = tables_with_alias[alias]
-        if tok in schema.schema[table]:
-            key = table + "." + tok
-            return start_idx+1, schema.idMap[key]
+        # we have <tableName> : [col1, col2, col3, col4,... etc]
+
+        table_schema = schema.schema[table]
+        for column_info in table_schema:
+            # get column_name specifically (if modified)
+            if ':' in column_info:
+                column_info, _ = column_info.split(':')
+            if column_info.strip() == tok:
+                key = table + "." + tok 
+                return start_idx+1, schema.idMap[key]
 
     assert False, "Error col: {}".format(tok)
 
