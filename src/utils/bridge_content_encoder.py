@@ -11,6 +11,7 @@ from typing import List, Optional, Tuple
 from rapidfuzz import fuzz
 import sqlite3
 import functools
+import json
 
 # fmt: off
 _stopwords = {'who', 'ourselves', 'down', 'only', 'were', 'him', 'at', "weren't", 'has', 'few', "it's", 'm', 'again',
@@ -197,10 +198,9 @@ def get_matched_entries(
 
 @functools.lru_cache(maxsize=1000, typed=False)
 def get_column_picklist(table_name: str, column_name: str, db_path: str) -> list:
-    column_name, _ = column_name.split(':')
-    column_name = column_name.strip()
+    column_name = json.loads(column_name)["column_name"].strip()
+    # print(column_name)
     fetch_sql = "SELECT DISTINCT `{}` FROM `{}`".format(column_name, table_name)
-    print(db_path)
     try:
         conn = sqlite3.connect(db_path)
         conn.text_factory = bytes
