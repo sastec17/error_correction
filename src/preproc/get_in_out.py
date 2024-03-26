@@ -123,11 +123,13 @@ def get_program_in_out(processed_data, is_train=True):
         inp = ex["question"]
         if len(word_tokenize(inp + ex["schema_text"])) <= 512:
             inp += ex["schema_text"]
-        inp += " </s> sql = " + json.dumps(init_query_clauses)
 
         schema = schemas[db_id]   # MODIFY SCHEMA HERE
         table = tables[db_id]
         schema = Schema(schema, table)
+
+        # TODO: APPEND FOREIGN KEY RELATIONS HERE 
+        inp += " </s> sql = " + json.dumps(init_query_clauses)
 
         edits = []
         if is_train or ex["label"] == 0:

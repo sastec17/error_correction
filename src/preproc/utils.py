@@ -82,6 +82,7 @@ def get_schemas_from_json(fpath):
 
     tables = {}
     schemas = {}
+    foreign_keys = {}
     print('In schemas.json')
     for db in data:
         db_id = db['db_id']
@@ -105,6 +106,25 @@ def get_schemas_from_json(fpath):
             schema[table] = cols
         schemas[db_id] = schema
 
-    return schemas, db_names, tables
 
-schemas, db_names, tables = get_schemas_from_json(table_file)
+        # Process foreign keys based off of foreign keys
+        # iterate over the foreign_keys table in the db
+        # TODO: test shit (locally) 
+        db_foreign_keys = db['foreign_keys']
+        relations = []
+        for item in db_foreign_keys:
+            key1, key2 = item 
+            # get the corresponding column / table names 
+            table1, name1, type1 = column_names_original[key1]
+            table2, name2, type2 = column_names_original[key2]
+            # get table names
+            table1 = table_names_original[table1]
+            table2 = table_names_original[table2]
+            pair = str(table1.lower())+ '.' + str(name1.lower()) + ':' + type1 + '=' +\
+                   str(table2.lower()) + '.' + str(name2.lower()) + ':' + type2 
+            relations.append(pair)
+        foreign_keys[db_id] = relations
+
+    return schemas, db_names, tables, foreign_keys
+
+schemas, db_names, tables, foreign_keys = get_schemas_from_json(table_file)
