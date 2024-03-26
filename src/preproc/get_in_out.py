@@ -121,7 +121,7 @@ def get_program_in_out(processed_data, is_train=True):
         gold_query_clauses = ex["query_dict"]
 
         inp = ex["question"]
-        if len(word_tokenize(inp + ex["schema_text"])) <= 512:
+        if len(word_tokenize(inp + ex["schema_text"])) <= 1024:
             inp += ex["schema_text"]
         inp += " </s> sql = " + json.dumps(init_query_clauses)
 

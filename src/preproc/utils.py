@@ -81,12 +81,13 @@ def get_schemas_from_json(fpath):
 
     tables = {}
     schemas = {}
+    pydict_schemas = {}
     for db in data:
         db_id = db['db_id']
         schema = {} #{'table': [col.lower, ..., ]} * -> __all__
         column_types = db['column_types'] 
         column_names_original = db['column_names_original']
-
+        pydict_schema = {}
         col_info_list = []
         for i, (table_index, column_name) in enumerate(column_names_original):
             col_info_wrapper = []
@@ -97,17 +98,19 @@ def get_schemas_from_json(fpath):
             }
             col_info_wrapper.append(json.dumps(col_info))
             col_info_list.append(col_info_wrapper)
-            
         table_names_original = db['table_names_original']
         tables[db_id] = {'column_names_original': column_names_original, 'table_names_original': table_names_original}
         for i, tabn in enumerate(table_names_original):
             table = str(tabn.lower())
             cols = [str(col_info.lower()) for td, col_info in col_info_list if td == i]
             # print(cols)
-            # cols = [str(col.lower()) for td, col in column_names_original if td == i]
+            pydict_schema[table] = cols
+            
+            cols = [str(col.lower()) for td, col in column_names_original if td == i]
             schema[table] = cols
-        schemas[db_id] = schema
+        schemas[db_id] = schema 
+        pydict_schemas[db_id] = pydict_schema  
 
-    return schemas, db_names, tables
+    return schemas, db_names, tables, pydict_schemas
 
-schemas, db_names, tables = get_schemas_from_json(table_file)
+schemas, db_names, tables, pydict_schemas = get_schemas_from_json(table_file)

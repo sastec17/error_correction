@@ -1,4 +1,4 @@
-from src.preproc.utils import db_path, table_file, schemas, tables, Schema, DEV_DB
+from src.preproc.utils import db_path, table_file, schemas, pydict_schemas, tables, Schema, DEV_DB
 from src.utils.get_schema_unifiedskg import serialize_schema
 from src.utils.disamb_sql_smbop import disambiguate_items
 from src.utils.spider_eval.process_sql import tokenize
@@ -73,6 +73,7 @@ def process_spider(spider, spider_preds, args, is_train=True):
         schema = schemas[db_id]
         table = tables[db_id]
         schema = Schema(schema, table)
+        """
         schema_text = serialize_schema(
             question=ex_w_pred["question"] if is_train else ex["question"],
             db_path=db_path,
@@ -81,7 +82,10 @@ def process_spider(spider, spider_preds, args, is_train=True):
             schema_serialization_with_db_id=False,
             schema_serialization_with_db_content=args.use_content,
         )
-
+        """
+        schema_text = pydict_schemas[db_id]
+        print(schema_text)
+        assert(3==4)
         # Get SQL and PyDict representation
         query_sql = get_query_sql_rep(db_id, gold_sql)
         query_pydict = get_query_pydict_rep(query_sql)
