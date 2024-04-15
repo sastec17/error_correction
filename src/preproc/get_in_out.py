@@ -18,7 +18,7 @@ def get_codit_in_out(processed_data, query_type, is_train=True):
     final_data = []
     for ex in processed_data:
         inp = ex["question"]
-        if len(word_tokenize(inp + ex["schema_text"])) <= 512:
+        if len(word_tokenize(inp + ex["schema_text"])) <= 1024:
             inp += ex["schema_text"]
 
         if query_type == "pydict":
@@ -121,7 +121,7 @@ def get_program_in_out(processed_data, is_train=True):
         gold_query_clauses = ex["query_dict"]
 
         inp = ex["question"]
-        if len(word_tokenize(inp + ex["schema_text"])) <= 512:
+        if len(word_tokenize(inp + ex["schema_text"])) <= 1024:
             inp += ex["schema_text"]
 
         schema = schemas[db_id]   # MODIFY SCHEMA HERE

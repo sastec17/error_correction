@@ -67,7 +67,7 @@ class Schema:
         for key, vals in schema.items():
             for val in vals:
                 if ':' in val:
-                    val, _ = val.split(':')     # make sure :colType isn't part of the mapping process
+                    val, _, _ = val.split(':')     # make sure :colType:fk isn't part of the mapping process
                     val = val.strip()
                 idMap[key.lower() + "." + val.lower()] = "__" + key.lower() + "." + val.lower() + "__"
                 id += 1
@@ -191,7 +191,7 @@ def parse_col(toks, start_idx, tables_with_alias, schema, default_tables=None):
         for column_info in table_schema:
             # get column_name specifically (if modified)
             if ':' in column_info:
-                column_info, _ = column_info.split(':')
+                column_info, _, _ = column_info.split(':') # remove "type:fk
             if column_info.strip() == tok:
                 key = table + "." + tok 
                 return start_idx+1, schema.idMap[key]

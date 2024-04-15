@@ -197,7 +197,7 @@ def get_matched_entries(
 
 @functools.lru_cache(maxsize=1000, typed=False)
 def get_column_picklist(table_name: str, column_name: str, db_path: str) -> list:
-    column_name, _ = column_name.split(':')
+    column_name, _, _ = column_name.split(':')
     column_name = column_name.strip()
     fetch_sql = "SELECT DISTINCT `{}` FROM `{}`".format(column_name, table_name)
     print(db_path)
