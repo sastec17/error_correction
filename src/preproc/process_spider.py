@@ -1,3 +1,4 @@
+import json
 from src.preproc.utils import db_path, table_file, schemas, pydict_schemas, tables, Schema, DEV_DB
 from src.utils.get_schema_unifiedskg import serialize_schema
 from src.utils.disamb_sql_smbop import disambiguate_items
@@ -83,9 +84,10 @@ def process_spider(spider, spider_preds, args, is_train=True):
             schema_serialization_with_db_content=args.use_content,
         )
         """
-        schema_text = pydict_schemas[db_id]
-        print(schema_text)
-        assert(3==4)
+        schema_text = json.dumps(pydict_schemas[db_id])
+        # print(type(schema_text))
+        # print(schema_text)
+        # assert(3==4)
         # Get SQL and PyDict representation
         query_sql = get_query_sql_rep(db_id, gold_sql)
         query_pydict = get_query_pydict_rep(query_sql)
