@@ -89,16 +89,29 @@ def get_schemas_from_json(fpath):
         column_names_original = db['column_names_original']
         pydict_schema = {}
         col_info_list = []
+        table_names_original = db['table_names_original']
+        # foreign_keys = get_foreign_keys(db, column_names_original, table_names_original)
+        # print(foreign_keys)
+        foreign_key_pairs = db['foreign_keys']
+        foreign_keys = []
+        for pair in foreign_key_pairs:
+            foreign_keys.extend(pair)
+
         for i, (table_index, column_name) in enumerate(column_names_original):
+            fk_value = False
+            if i in foreign_keys:
+                fk_value = True
+
             col_info_wrapper = []
             col_info_wrapper.append(table_index)
             col_info = {
                 "column_name": column_name,
-                "column_type": column_types[i]
+                "column_type": column_types[i],
+                "is_foreign_key": fk_value
             }
             col_info_wrapper.append(json.dumps(col_info))
             col_info_list.append(col_info_wrapper)
-        table_names_original = db['table_names_original']
+        
         tables[db_id] = {'column_names_original': column_names_original, 'table_names_original': table_names_original}
         for i, tabn in enumerate(table_names_original):
             table = str(tabn.lower())
@@ -112,5 +125,29 @@ def get_schemas_from_json(fpath):
         pydict_schemas[db_id] = pydict_schema  
 
     return schemas, db_names, tables, pydict_schemas
+
+def get_foreign_keys(db, column_names_original, table_names_original):
+    """
+    Returns foreign key relations for a single db as follows:
+    { "table1:col1" : "table2:col5",
+                "table2:col4" : "table3:col7"}
+    }
+    """
+    db_foreign_keys = db['foreign_keys']
+    relations = {}
+    for item in db_foreign_keys:
+        key1, key2 = item 
+        # get the corresponding column / table names 
+        table1, name1 = column_names_original[key1]
+        table2, name2 = column_names_original[key2]
+        # get table names
+        table1 = table_names_original[table1]
+        table2 = table_names_original[table2]
+        relations[str(table1.lower())+ ':' + str(name1.lower())] =\
+                    str(table2.lower()) + '.' + str(name2.lower())
+        
+        relations[str(table2.lower()) + ':' + str(name2.lower())] =\
+                    str(table1.lower())+ '.' + str(name1.lower())
+    return relations
 
 schemas, db_names, tables, pydict_schemas = get_schemas_from_json(table_file)

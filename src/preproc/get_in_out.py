@@ -18,7 +18,7 @@ def get_codit_in_out(processed_data, query_type, is_train=True):
     final_data = []
     for ex in processed_data:
         inp = ex["question"]
-        if len(word_tokenize(inp + ex["schema_text"])) <= 512:
+        if len(word_tokenize(inp + ex["schema_text"])) <= 2048:
             inp += ex["schema_text"]
 
         if query_type == "pydict":
