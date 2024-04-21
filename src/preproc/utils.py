@@ -90,28 +90,36 @@ def get_schemas_from_json(fpath):
         pydict_schema = {}
         col_info_list = []
         table_names_original = db['table_names_original']
-        # foreign_keys = get_foreign_keys(db, column_names_original, table_names_original)
+        foreign_keys = get_foreign_keys(db, column_names_original, table_names_original)
         # print(foreign_keys)
-        foreign_key_pairs = db['foreign_keys']
-        foreign_keys = []
-        for pair in foreign_key_pairs:
-            foreign_keys.extend(pair)
+        # break
+        # foreign_key_pairs = db['foreign_keys']
+        # foreign_keys = []
+        # for pair in foreign_key_pairs:
+        #     foreign_keys.extend(pair)
 
         for i, (table_index, column_name) in enumerate(column_names_original):
-            fk_value = False
-            if i in foreign_keys:
-                fk_value = True
-
+            # fk_value = False
+            # if i in foreign_keys:
+            #     fk_value = True
+            # if i == 0 or i == 1: continue
+            table_name = db['table_names_original'][table_index]
+            # print(column_name.lower())
+            # print(foreign_keys)
+            # print(f"{table_name}:{column_name.lower()}")
+            foreign_key = foreign_keys.get(f"{table_name}:{column_name.lower()}", 'n/a')
+            # print(foreign_key)
+            # break
             col_info_wrapper = []
             col_info_wrapper.append(table_index)
             col_info = {
                 "column_name": column_name,
                 "column_type": column_types[i],
-                "is_foreign_key": fk_value
+                "foreign_key": foreign_key
             }
             col_info_wrapper.append(json.dumps(col_info))
             col_info_list.append(col_info_wrapper)
-        
+        # break
         tables[db_id] = {'column_names_original': column_names_original, 'table_names_original': table_names_original}
         for i, tabn in enumerate(table_names_original):
             table = str(tabn.lower())
